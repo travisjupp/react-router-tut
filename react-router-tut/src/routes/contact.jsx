@@ -87,6 +87,10 @@ function Favorite({ contact }) {
   const fetcher = useFetcher();
   // yes, this is a `let` for later
   let favorite = contact.favorite;
+  if (fetcher.formData) { // optimistic UI
+    // update stars state using fetcher.formData value
+    favorite = fetcher.formData.get("favorite") === "true";
+  }
   return (
     <fetcher.Form method="post">
       <button
