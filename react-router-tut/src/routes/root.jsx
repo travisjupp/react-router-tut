@@ -17,7 +17,7 @@ export async function action() {
     return redirect(`/contacts/${contact.id}/edit`);
 }
 
-export async function loader({request}) {
+export async function loader({ request }) {
     const url = new URL(request.url);
     const q = url.searchParams.get("q");
     const contacts = await getContacts(q);
@@ -28,6 +28,12 @@ export default function Root() {
     const { contacts, q } = useLoaderData();
     const navigation = useNavigation();
     const submit = useSubmit();
+
+    const searching =
+        navigation.location &&
+        new URLSearchParams(navigation.location.search).has(
+            "q"
+        );
 
     useEffect(() => {
         document.getElementById("q").value = q;
@@ -41,6 +47,7 @@ export default function Root() {
                     <Form id="search-form" role="search">
                         <input
                             id="q"
+                            className={searching ? "loading" : ""}
                             aria-label="Search contacts"
                             placeholder="Search"
                             type="search"
@@ -53,7 +60,7 @@ export default function Root() {
                         <div
                             id="search-spinner"
                             aria-hidden
-                            hidden={true}
+                            hidden={!searching}
                         />
                         <div
                             className="sr-only"
@@ -70,13 +77,13 @@ export default function Root() {
                             {contacts.map((contact) => (
                                 <li key={contact.id}>
                                     <NavLink to={`contacts/${contact.id}`}
-                                    className={({ isActive, isPending }) =>
-                                        isActive 
-                                        ? "active"
-                                        : isPending
-                                        ? "pending"
-                                        : ""
-                                    }
+                                        className={({ isActive, isPending }) =>
+                                            isActive
+                                                ? "active"
+                                                : isPending
+                                                    ? "pending"
+                                                    : ""
+                                        }
                                     >
                                         {contact.first || contact.last ? (
                                             <>
@@ -98,9 +105,9 @@ export default function Root() {
                 </nav>
             </div>
             <div id="detail"
-            className={
-                navigation.state === "loading" ? "loading" : ""
-            }
+                className={
+                    navigation.state === "loading" ? "loading" : ""
+                }
             >
                 <Outlet />
             </div>
